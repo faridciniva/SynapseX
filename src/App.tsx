@@ -122,10 +122,20 @@ export default function App() {
     }
   }, [])
 
-  // ── Hero video mouse-scrub ──────────────────────────────────────────────
+  // ── Hero video: autoplay on mobile, mouse-scrub on desktop ────────────
   useEffect(() => {
     const video = heroVideoRef.current
     if (!video) return
+
+    // Touch/mobile device → just autoplay (muted + playsInline = eligible on iOS/Android)
+    const isMobile = window.matchMedia('(hover: none) and (pointer: coarse)').matches
+    if (isMobile) {
+      video.play().catch(() => {})
+      return () => { video.pause() }
+    }
+
+    // Desktop: pause and let mouse scrub control playback
+    video.pause()
 
     const handleSeeked = () => {
       isSeekingRef.current = false
@@ -291,7 +301,7 @@ export default function App() {
       ══════════════════════════════════════════════════════════ */}
       <section className="relative w-full h-screen h-[100dvh] overflow-hidden flex flex-col bg-black">
 
-        {/* Mouse-scrubbed background video (paused, no autoplay) */}
+        {/* Background video: mouse-scrubbed on desktop, autoplays on mobile */}
         <video
           ref={heroVideoRef}
           src={VIDEOS.hero}
@@ -299,6 +309,7 @@ export default function App() {
           playsInline
           preload="auto"
           muted
+          loop
         />
 
         {/* Teal dot grid overlay */}
@@ -347,7 +358,7 @@ export default function App() {
             <div className="flex flex-col gap-4">
               <h1
                 className="text-white font-light leading-[0.95] tracking-[-0.03em]"
-                style={{ fontSize: 'clamp(40px, 10vw, 100px)' }}
+                style={{ fontSize: 'clamp(26px, 9vw, 100px)' }}
               >
                 <ScrambleIn text="Tu Marca" delay={200} triggered={entranceComplete} />
                 <br />
@@ -370,7 +381,7 @@ export default function App() {
             {/* Right heading */}
             <h1
               className="text-white font-light leading-[0.95] tracking-[-0.03em] text-left md:text-right"
-              style={{ fontSize: 'clamp(40px, 10vw, 100px)' }}
+              style={{ fontSize: 'clamp(26px, 9vw, 100px)' }}
             >
               <ScrambleIn text="Ideas" delay={700} triggered={entranceComplete} />
               <br />
@@ -427,11 +438,11 @@ export default function App() {
         />
 
         {/* 3D scroll-driven paragraph */}
-        <div className="relative z-20 max-w-5xl w-full" style={{ perspective: '400px' }}>
+        <div className="relative z-20 max-w-5xl w-full overflow-hidden" style={{ perspective: '400px' }}>
           <motion.p
             className="font-sans font-normal text-white leading-[1.35] tracking-[-0.02em] select-none text-center px-6 sm:px-12"
             style={{
-              fontSize: 'clamp(22px, 4.5vw, 42px)',
+              fontSize: 'clamp(16px, 4.5vw, 42px)',
               transform: cinemaTransform,
               opacity: cinemaOpacity,
             }}
@@ -891,31 +902,33 @@ export default function App() {
 
         {/* Etiqueta inferior */}
         <motion.div
-          className="relative z-10 mt-14 text-center"
+          className="relative z-10 mt-14 w-full flex justify-center px-6"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.8, delay: 0.5 }}
         >
           <div
-            className="inline-flex items-center gap-3 rounded-full px-6 py-3"
+            className="flex items-center gap-3 rounded-full px-4 sm:px-6 py-3 overflow-hidden"
             style={{
               background: 'rgba(0,205,176,0.06)',
               border: `1px solid rgba(0,205,176,0.2)`,
+              maxWidth: '100%',
             }}
           >
             <div
               style={{
-                width: 8, height: 8, borderRadius: '50%',
+                width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
                 background: TEAL, boxShadow: `0 0 10px ${TEAL}`,
                 animation: 'pulse 2s ease-in-out infinite',
               }}
             />
             <span
+              className="truncate"
               style={{
                 color: 'rgba(0,205,176,0.8)',
                 fontSize: 12, fontWeight: 500,
-                letterSpacing: '0.15em', textTransform: 'uppercase',
+                letterSpacing: '0.1em', textTransform: 'uppercase',
               }}
             >
               Cyber Ronin — Neural Edges · Proyecto Activo
@@ -1012,7 +1025,7 @@ export default function App() {
           style={{ background: 'rgba(0,8,6,0.35)' }}
         />
 
-        <div className="relative z-10 flex flex-col flex-1 px-8 sm:px-12 md:px-16 py-12 sm:py-16">
+        <div className="relative z-10 flex flex-col flex-1 px-5 sm:px-12 md:px-16 py-10 sm:py-16">
           <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-6">
             <motion.h2
               className="text-white font-light leading-[0.95] tracking-[-0.03em]"
@@ -1043,7 +1056,7 @@ export default function App() {
           <div className="flex-1" />
 
           <motion.div
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-6"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true, amount: 0.3 }}
@@ -1082,7 +1095,7 @@ export default function App() {
         className="w-full min-h-screen flex items-center justify-center relative"
         style={{ background: 'radial-gradient(ellipse 90% 70% at 50% 50%, #0d2535 0%, #071520 50%, #030a10 100%)' }}
       >
-        <div className="w-full max-w-3xl mx-auto px-6 py-32 text-center">
+        <div className="w-full max-w-3xl mx-auto px-6 py-16 sm:py-32 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -1120,7 +1133,7 @@ export default function App() {
             {ARCH_LAYERS.map((layer) => (
               <div
                 key={layer.num}
-                className="w-full max-w-md h-[72px] rounded-lg flex items-center justify-between px-6"
+                className="w-full max-w-md h-[72px] rounded-lg flex items-center justify-between px-4 sm:px-6"
                 style={{ border: '1px solid rgba(0,205,176,0.18)' }}
               >
                 <span
