@@ -130,14 +130,17 @@ export default function Navbar({ entranceComplete }: Props) {
 
         {/* Logo pill — collapses when menu opens */}
         <motion.div
-          className="overflow-hidden flex-shrink-0 h-9 rounded-[10px] flex items-center"
+          className="overflow-hidden flex-shrink-0 h-10 rounded-[10px] flex items-center"
           style={{ background: 'rgba(0,205,176,0.12)' }}
-          animate={{ maxWidth: menuOpen ? 0 : 130, opacity: menuOpen ? 0 : 1 }}
+          animate={{ maxWidth: menuOpen ? 0 : 140, opacity: menuOpen ? 0 : 1 }}
           transition={SPRING}
         >
-          <div className="flex items-center gap-2 px-3.5 whitespace-nowrap">
-            <SynapseXLogo size={14} color={TEAL} />
-            <span className="text-[13px] font-medium tracking-tight text-white">SynapseX</span>
+          <div className="flex items-center px-2.5 whitespace-nowrap">
+            <img
+              src="/qualio-logo.png"
+              alt="QualioAI"
+              style={{ height: 32, width: 'auto', display: 'block' }}
+            />
           </div>
         </motion.div>
 
