@@ -63,6 +63,13 @@ export default function App() {
   const ltxIframeRef  = useRef<HTMLIFrameElement>(null)
   const cursorLtxRef  = useRef<HTMLDivElement>(null)
 
+  // ── Background video: force-play on mobile when browser has enough data ──
+  const bgVideoPlay = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const v = e.currentTarget
+    v.muted = true
+    if (v.paused) v.play().catch(() => {})
+  }
+
   // ── Scroll-driven 3D text (Section 2) ──────────────────────────────────
   const { scrollYProgress } = useScroll({
     target: cinemaRef,
@@ -977,6 +984,7 @@ export default function App() {
           loop
           playsInline
           preload="metadata"
+          onCanPlay={bgVideoPlay}
         />
         {/* Overlay oscuro para que el texto sea legible */}
         <div
@@ -1044,6 +1052,7 @@ export default function App() {
           loop
           playsInline
           preload="metadata"
+          onCanPlay={bgVideoPlay}
         />
         {/* Overlay oscuro para legibilidad */}
         <div
@@ -1202,6 +1211,7 @@ export default function App() {
               loop
               playsInline
               preload="metadata"
+              onCanPlay={bgVideoPlay}
             />
           </div>
 
