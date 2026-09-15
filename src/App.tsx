@@ -168,6 +168,30 @@ export default function App() {
     }
   }, [])
 
+  // ── Background video autoplay guarantee (mobile browsers ignore [autoplay] attr) ──
+  useEffect(() => {
+    const tryPlay = (v: HTMLVideoElement) => {
+      if (v.paused && v.hasAttribute('autoplay')) {
+        v.muted = true
+        v.play().catch(() => {})
+      }
+    }
+
+    // Initial attempt after DOM settles
+    const t = setTimeout(() => {
+      document.querySelectorAll<HTMLVideoElement>('video[autoplay]').forEach(tryPlay)
+    }, 600)
+
+    // Resume when video scrolls into view (mobile recycles off-screen video resources)
+    const io = new IntersectionObserver(
+      entries => entries.forEach(e => { if (e.isIntersecting) tryPlay(e.target as HTMLVideoElement) }),
+      { threshold: 0.05 }
+    )
+    document.querySelectorAll<HTMLVideoElement>('video[autoplay]').forEach(v => io.observe(v))
+
+    return () => { clearTimeout(t); io.disconnect() }
+  }, [])
+
   // ── LTX cursor simulation: DOM directo (mismo origen), videos a 2× velocidad
   useEffect(() => {
     const iframe  = ltxIframeRef.current
@@ -952,6 +976,7 @@ export default function App() {
           muted
           loop
           playsInline
+          preload="metadata"
         />
         {/* Overlay oscuro para que el texto sea legible */}
         <div
@@ -1018,6 +1043,7 @@ export default function App() {
           muted
           loop
           playsInline
+          preload="metadata"
         />
         {/* Overlay oscuro para legibilidad */}
         <div
@@ -1175,6 +1201,7 @@ export default function App() {
               muted
               loop
               playsInline
+              preload="metadata"
             />
           </div>
 
