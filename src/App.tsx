@@ -495,7 +495,7 @@ export default function App() {
           §3  HERO — MASCOTA TEAL
       ══════════════════════════════════════════════════════════ */}
       <section
-        className="relative w-full h-screen h-[100dvh] overflow-hidden flex flex-col"
+        className="relative w-full min-h-[100dvh] lg:h-[100dvh] overflow-hidden flex flex-col"
         style={{
           background: 'radial-gradient(ellipse 100% 100% at 65% 55%, #0d2535 0%, #071520 50%, #030a10 100%)',
         }}
@@ -629,27 +629,24 @@ export default function App() {
           </div>
         </motion.div>
 
-        {/* ── LTX panel — MOBILE ── */}
-        {/* Visible width: 576×0.58=334px · Visible card height: 401×0.58=233px */}
-        <div
-          className="lg:hidden absolute"
-          style={{ left: '50%', marginLeft: -167, top: '13%', zIndex: 10, pointerEvents: 'none', width: 334 }}
-        >
-          <div>
-            {/* Clip container — exact visual dimensions so layout height is correct */}
-            <div style={{ width: 334, height: 233, overflow: 'hidden' }}>
-              {/* Inner 576px div scaled to 58% from top-left */}
+        {/* Contenido */}
+        <div className="relative z-10 flex flex-col flex-1 px-4 sm:px-6 md:px-8 pt-20 sm:pt-24 pb-8 sm:pb-12">
+
+          {/* ── LTX panel — MOBILE: en flujo normal, visible sin conflicto de z-index ── */}
+          <div className="lg:hidden flex flex-col items-center mb-4 mt-2">
+            {/* Clip container: dimensiones exactas del panel escalado */}
+            <div style={{
+              width: 334, height: 233, overflow: 'hidden', flexShrink: 0,
+              borderRadius: 12,
+              boxShadow: '0 0 0 1px rgba(255,255,255,0.12), 0 0 40px rgba(0,205,176,0.15)',
+            }}>
+              {/* Inner 576px card escalado 58% desde top-left */}
               <div style={{ transform: 'scale(0.58)', transformOrigin: 'top left', width: 576 }}>
-                <div style={{
-                  borderRadius: 20,
-                  boxShadow: '0 0 0 1px rgba(255,255,255,0.1), 0 40px 100px rgba(0,0,0,0.7), 0 0 80px rgba(0,205,176,0.1)',
-                  overflow: 'hidden',
-                }}>
+                <div style={{ overflow: 'hidden' }}>
                   {/* Browser chrome */}
                   <div style={{
-                    background: 'rgba(14,22,32,0.96)', backdropFilter: 'blur(16px)',
-                    WebkitBackdropFilter: 'blur(16px)',
-                    borderBottom: '1px solid rgba(255,255,255,0.07)',
+                    background: 'rgba(14,22,32,0.98)',
+                    borderBottom: '1px solid rgba(255,255,255,0.1)',
                     padding: '11px 18px', display: 'flex', alignItems: 'center', gap: 10, height: 41,
                   }}>
                     <div style={{ display: 'flex', gap: 6 }}>
@@ -658,14 +655,14 @@ export default function App() {
                       ))}
                     </div>
                     <div style={{
-                      flex: 1, background: 'rgba(255,255,255,0.05)', borderRadius: 6,
-                      padding: '4px 12px', fontSize: 11, color: 'rgba(255,255,255,0.3)',
+                      flex: 1, background: 'rgba(255,255,255,0.07)', borderRadius: 6,
+                      padding: '4px 12px', fontSize: 11, color: 'rgba(255,255,255,0.4)',
                       textAlign: 'center', fontFamily: 'monospace', letterSpacing: '0.04em',
                     }}>ltx.ai</div>
                     <div style={{ width: 10 }} />
                   </div>
                   {/* Iframe LTX */}
-                  <div style={{ position: 'relative', width: 576, height: 360, overflow: 'hidden', background: '#000' }}>
+                  <div style={{ position: 'relative', width: 576, height: 360, overflow: 'hidden', background: '#050d15' }}>
                     <iframe
                       src="/ltx/index.html"
                       title="LTX mobile"
@@ -682,18 +679,16 @@ export default function App() {
               </div>
             </div>
             {/* Badge */}
-            <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8, alignSelf: 'flex-start', paddingLeft: 20 }}>
               <div style={{ width: 7, height: 7, borderRadius: '50%', background: TEAL, boxShadow: `0 0 8px ${TEAL}`, flexShrink: 0 }} />
               <span style={{ color: 'rgba(255,255,255,0.32)', fontSize: 11, letterSpacing: '0.03em' }}>
                 LTX World Model · Demo en vivo
               </span>
             </div>
           </div>
-        </div>
 
-        {/* Contenido */}
-        <div className="relative z-10 flex flex-col flex-1 px-4 sm:px-6 md:px-8 pt-20 sm:pt-24 pb-8 sm:pb-12">
-          <div className="flex-1" />
+          {/* Spacer — solo en desktop empuja el texto al fondo */}
+          <div className="hidden lg:block flex-1" />
 
           <div className="flex flex-col gap-6 max-w-xl">
             {/* Tag */}
