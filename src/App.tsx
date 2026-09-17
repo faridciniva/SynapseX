@@ -134,10 +134,14 @@ export default function App() {
     const video = heroVideoRef.current
     if (!video) return
 
-    // Touch/mobile device → just autoplay (muted + playsInline = eligible on iOS/Android)
-    const isMobile = window.matchMedia('(hover: none) and (pointer: coarse)').matches
+    // maxTouchPoints > 0 is the most reliable mobile detection across iOS/Android
+    const isMobile = navigator.maxTouchPoints > 0
     if (isMobile) {
-      video.play().catch(() => {})
+      video.muted = true
+      // Play immediately if ready, otherwise wait for canplay
+      const doPlay = () => video.play().catch(() => {})
+      if (video.readyState >= 2) doPlay()
+      else video.addEventListener('canplay', doPlay, { once: true })
       return () => { video.pause() }
     }
 
@@ -337,6 +341,7 @@ export default function App() {
           ref={heroVideoRef}
           src={VIDEOS.hero}
           className="absolute inset-0 w-full h-full object-cover"
+          autoPlay
           playsInline
           preload="auto"
           muted
@@ -623,6 +628,68 @@ export default function App() {
             </span>
           </div>
         </motion.div>
+
+        {/* ── LTX panel — MOBILE ── */}
+        {/* Visible width: 576×0.58=334px · Visible card height: 401×0.58=233px */}
+        <div
+          className="lg:hidden absolute"
+          style={{ left: '50%', marginLeft: -167, top: '13%', zIndex: 10, pointerEvents: 'none', width: 334 }}
+        >
+          <div>
+            {/* Clip container — exact visual dimensions so layout height is correct */}
+            <div style={{ width: 334, height: 233, overflow: 'hidden' }}>
+              {/* Inner 576px div scaled to 58% from top-left */}
+              <div style={{ transform: 'scale(0.58)', transformOrigin: 'top left', width: 576 }}>
+                <div style={{
+                  borderRadius: 20,
+                  boxShadow: '0 0 0 1px rgba(255,255,255,0.1), 0 40px 100px rgba(0,0,0,0.7), 0 0 80px rgba(0,205,176,0.1)',
+                  overflow: 'hidden',
+                }}>
+                  {/* Browser chrome */}
+                  <div style={{
+                    background: 'rgba(14,22,32,0.96)', backdropFilter: 'blur(16px)',
+                    WebkitBackdropFilter: 'blur(16px)',
+                    borderBottom: '1px solid rgba(255,255,255,0.07)',
+                    padding: '11px 18px', display: 'flex', alignItems: 'center', gap: 10, height: 41,
+                  }}>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      {(['#ff5f57','#febc2e','#28c840'] as const).map(c => (
+                        <div key={`mb-${c}`} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />
+                      ))}
+                    </div>
+                    <div style={{
+                      flex: 1, background: 'rgba(255,255,255,0.05)', borderRadius: 6,
+                      padding: '4px 12px', fontSize: 11, color: 'rgba(255,255,255,0.3)',
+                      textAlign: 'center', fontFamily: 'monospace', letterSpacing: '0.04em',
+                    }}>ltx.ai</div>
+                    <div style={{ width: 10 }} />
+                  </div>
+                  {/* Iframe LTX */}
+                  <div style={{ position: 'relative', width: 576, height: 360, overflow: 'hidden', background: '#000' }}>
+                    <iframe
+                      src="/ltx/index.html"
+                      title="LTX mobile"
+                      scrolling="no"
+                      style={{
+                        position: 'absolute', top: 0, left: 0,
+                        width: '250%', height: '250%', border: 'none',
+                        transformOrigin: 'top left', transform: 'scale(0.40)',
+                        pointerEvents: 'none',
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            {/* Badge */}
+            <div style={{ marginTop: 8, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 7, height: 7, borderRadius: '50%', background: TEAL, boxShadow: `0 0 8px ${TEAL}`, flexShrink: 0 }} />
+              <span style={{ color: 'rgba(255,255,255,0.32)', fontSize: 11, letterSpacing: '0.03em' }}>
+                LTX World Model · Demo en vivo
+              </span>
+            </div>
+          </div>
+        </div>
 
         {/* Contenido */}
         <div className="relative z-10 flex flex-col flex-1 px-4 sm:px-6 md:px-8 pt-20 sm:pt-24 pb-8 sm:pb-12">
